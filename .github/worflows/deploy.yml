@@ -31,13 +31,13 @@ jobs:
       - name: Setup GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: 17
+          java-version: 21
 
       - name: Setup fly
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Maven build native image
-        run: ./mvnw package -Dnative -Dquarkus.container-image.build=true
+        run: ./mvnw package -Dnative -Dquarkus.container-image.build=true -Dquarkus.profile=prod
 
       - name: Deploy to fly.io
         run: flyctl deploy --local-only --auto-confirm
