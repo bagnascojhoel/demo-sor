@@ -7,7 +7,7 @@ app = 'demo-sor'
 primary_region = 'gru'
 
 [build]
-  dockerfile = 'src/main/docker/Dockerfile.native'
+  dockerfile = 'src/main/docker/Dockerfile.native-micro'
 
 [http_service]
   internal_port = 8080
