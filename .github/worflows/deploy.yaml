@@ -1,0 +1,45 @@
+name: Deploy workflow
+
+on:
+  push:
+    branches: [ 'main' ]
+    paths-ignore:
+      - dev-tools
+      - README.md
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'flyio'
+  cancel-in-progress: true
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: 17
+
+      - name: Setup fly
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Maven build native image
+        run: ./mvnw package -Dnative -Dquarkus.container-image.build=true
+
+      - name: Deploy to fly.io
+        run: flyctl deploy --local-only --auto-confirm
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_DEPLOY_SECRET }}
